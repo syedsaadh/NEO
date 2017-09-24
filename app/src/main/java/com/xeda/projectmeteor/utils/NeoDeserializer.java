@@ -33,10 +33,11 @@ public class NeoDeserializer implements JsonDeserializer<NEO> {
 
         Integer elementCount = jsonObject.get("element_count").getAsInt();
 
+        JsonObject linkObject = jsonObject.getAsJsonObject("links");
         Links links = new Links();
-        links.setNext(jsonObject.get("next").getAsString());
-        links.setNext(jsonObject.get("prev").getAsString());
-        links.setNext(jsonObject.get("self").getAsString());
+        links.setNext(linkObject.get("next").getAsString());
+        links.setNext(linkObject.get("prev").getAsString());
+        links.setNext(linkObject.get("self").getAsString());
 
         JsonObject nearEarthObjects = jsonObject.getAsJsonObject("near_earth_objects");
 
