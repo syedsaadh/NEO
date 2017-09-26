@@ -4,8 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context="com.xeda.projectmeteor.ui.DetailActivity">
+
     <LinearLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -13,19 +16,14 @@
         android:orientation="vertical">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            style="@style/CardMeteorDetail">
             <TextView
                 android:id="@+id/label_meteor_name"
                 android:text="METEOR NAME"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="16dp"/>
+                style="@style/CardMeteorDetailLabel"/>
             <TextView
                 android:id="@+id/meteor_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
+                style="@style/CardMeteorDetailValue"
                 android:layout_below="@id/label_meteor_name"/>
         </RelativeLayout>
         <LinearLayout
@@ -33,37 +31,29 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                style="@style/CardMeteorDetail">
                 <TextView
                     android:id="@+id/label_absolute_magnitude"
                     android:text="ABSOLUTE MAGNITUDE"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"/>
+                    style="@style/CardMeteorDetailLabel"/>
                 <TextView
                     android:id="@+id/absolute_magnitude"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
+                    style="@style/CardMeteorDetailValue"
                     android:layout_below="@id/label_absolute_magnitude"/>
             </RelativeLayout>
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                style="@style/CardMeteorDetail">
                 <TextView
                     android:id="@+id/label_absolute_diameter"
-                    android:text="ABSOLUTE DIAMETER"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"/>
+                    android:text="ESTIMATED DIAMETER (METERS)"
+                    style="@style/CardMeteorDetailLabel"/>
                 <TextView
                     android:id="@+id/absolute_diameter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
+                    style="@style/CardMeteorDetailValue"
                     android:layout_below="@id/label_absolute_diameter"/>
             </RelativeLayout>
         </LinearLayout>
@@ -72,39 +62,41 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                style="@style/CardMeteorDetail">
                 <TextView
                     android:id="@+id/label_close_approach_date"
                     android:text="CLOSE APPROACH DATE"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"/>
+                    style="@style/CardMeteorDetailLabel"/>
                 <TextView
                     android:id="@+id/close_approach_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
+                    style="@style/CardMeteorDetailValue"
                     android:layout_below="@id/label_close_approach_date"/>
             </RelativeLayout>
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                style="@style/CardMeteorDetail">
                 <TextView
                     android:id="@+id/label_approaching_body"
                     android:text="APPROACHING BODY"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"/>
+                    style="@style/CardMeteorDetailLabel"/>
                 <TextView
                     android:id="@+id/approaching_body"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
+                    style="@style/CardMeteorDetailValue"
                     android:layout_below="@id/label_approaching_body"/>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        app:lottie_fileName="meteor.json"
+        app:lottie_loop="true"
+        app:lottie_imageAssetsFolder="images"
+        app:lottie_autoPlay="true"
+        android:layout_above="@id/layout"/>
 </RelativeLayout>
