@@ -4,137 +4,131 @@ import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.xeda.projectmeteor.api.ApiClient;
-import com.xeda.projectmeteor.api.NEOService;
 import com.xeda.projectmeteor.models.MeteorObjects;
 import com.xeda.projectmeteor.models.NEO;
+import com.xeda.projectmeteor.ui.DatePickerFragment;
 import com.xeda.projectmeteor.ui.NEOAdapter;
-import com.xeda.projectmeteor.viewmodel.LiveDataNeoViewModel;
+import com.xeda.projectmeteor.viewmodel.NeoListViewModel;
 
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends LifecycleActivity implements DatePickerFragment.DatePickerFragmentListener{
 
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.progress_dialog)
+    ProgressBar progressBar;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
     private NEOAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private List<MeteorObjects> list = new ArrayList<MeteorObjects>();
-
     public final static String API_KEY = BuildConfig.API_KEY;
-    private static final String TAG = MainActivity.class.getSimpleName();
 
-    private LiveDataNeoViewModel mLiveDataNeoViewModel;
+    private NeoListViewModel mLiveDataNeoViewModel;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_today:
-                    return true;
-                case R.id.navigation_explore:
-                    return true;
-            }
-            return false;
-        }
-
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
         if (API_KEY.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Please obtain your API KEY, Place in root folder in file keystore.properties", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),
+                    "Please obtain your API KEY, Place in root folder in file keystore.properties",
+                    Toast.LENGTH_LONG).show();
             return;
         }
+        Timber.plant(new Timber.DebugTree());
+        initViews();
+        initViewModels();
 
+    }
 
+    private void initViews() {
+        ButterKnife.bind(this);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFabClick();
+            }
+        });
+        mRecyclerView.setClipToPadding(false);
+        mRecyclerView.setPadding(0, 300, 0, 0);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new NEOAdapter(getApplicationContext(), list);
-        mRecyclerView.setAdapter(mAdapter);
-//
-//        NEOService neoService = ApiClient.getClient().create(NEOService.class);
-//        observable = neoService.getFeeds("2015-09-07","2015-09-07",API_KEY);
-//        observable
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<NEO>() {
-//                    @Override
-//                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(@io.reactivex.annotations.NonNull NEO neo) {
-//                        List<MeteorObjects> result = neo.getNearEarthObjects().get(0).getMeteorObjects();
-//                        for(MeteorObjects mo : result){
-//                            list.add(mo);
-//                        }
-//                        Log.d(TAG, "Count of Near Earth Objects " + list.size());
-//                        mAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
-////                .subscribe( response -> {
-////                    Log.d(TAG, "Count of Near Earth Objects " + response.getNearEarthObjects().get(0).getDate());
-////                });
 
-        mLiveDataNeoViewModel = ViewModelProviders.of(this).get(LiveDataNeoViewModel.class);
+        mRecyclerView.setHasFixedSize(true);
+
+        mAdapter = new NEOAdapter(getApplicationContext());
+        mRecyclerView.setAdapter(mAdapter);
+
+    }
+    private void onFabClick() {
+        DialogFragment newFragment = DatePickerFragment.newInstance(this);
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    @Override
+    public void onDateSet(Date date) {
+        showProgress();
+        mLiveDataNeoViewModel.changeDate(date);
+    }
+
+    private void initViewModels() {
+        mLiveDataNeoViewModel = ViewModelProviders.of(this).get(NeoListViewModel.class);
         subscribe();
     }
 
     private void subscribe() {
-        final Observer<NEO> neoObserver = new Observer<NEO>() {
+        mLiveDataNeoViewModel.getNeoObservable().observe(this, new Observer<List<MeteorObjects>>() {
             @Override
-            public void onChanged(@Nullable NEO neo) {
-                List<MeteorObjects> results = neo.getNearEarthObjects().get(0).getMeteorObjects();
-                list.addAll(results);
-                Log.d(TAG, "Count of Near Earth Objects " + neo.getElementCount());
-                mAdapter.notifyDataSetChanged();
+            public void onChanged(@Nullable List<MeteorObjects> meteorObjectses) {
+                if(meteorObjectses != null && meteorObjectses.size() != 0) {
+                    hideProgress();
+                    showNeoListInUi(meteorObjectses);
+                }else  {
+                    showProgress();
+                }
             }
-        };
-        mLiveDataNeoViewModel.getNeoObservable().observe(this, neoObserver);
+        });
+    }
+
+    private void showNeoListInUi(List<MeteorObjects> items) {
+        mAdapter.setItems(items);
+    }
+
+    private void showProgress() {
+        if(!progressBar.isShown()) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+    private void hideProgress() {
+        if (progressBar.isShown()) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
