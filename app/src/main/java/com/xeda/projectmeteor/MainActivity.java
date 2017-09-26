@@ -69,7 +69,7 @@ public class MainActivity extends LifecycleActivity implements DatePickerFragmen
             }
         });
         mRecyclerView.setClipToPadding(false);
-        mRecyclerView.setPadding(0, 300, 0, 0);
+        mRecyclerView.setPadding(0, 300, 0, 150);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
