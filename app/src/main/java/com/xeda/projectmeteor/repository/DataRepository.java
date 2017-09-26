@@ -9,15 +9,10 @@ import com.xeda.projectmeteor.api.NEOService;
 import com.xeda.projectmeteor.models.MeteorObjects;
 import com.xeda.projectmeteor.models.NEO;
 
-import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.FlowableSubscriber;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
