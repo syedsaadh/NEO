@@ -2,6 +2,7 @@ package com.xeda.projectmeteor.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.xeda.projectmeteor.models.NEO;
 import com.xeda.projectmeteor.utils.NeoDeserializer;
 
@@ -18,10 +19,10 @@ public class ApiClient {
 
 
     public static Retrofit getClient() {
-        if (retrofit==null) {
+        if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
-//                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(buildGsonConverter())
                     .build();
         }

@@ -6,8 +6,18 @@ import android.arch.lifecycle.MutableLiveData;
 import com.xeda.projectmeteor.BuildConfig;
 import com.xeda.projectmeteor.api.ApiClient;
 import com.xeda.projectmeteor.api.NEOService;
+import com.xeda.projectmeteor.models.MeteorObjects;
 import com.xeda.projectmeteor.models.NEO;
 
+import org.reactivestreams.Subscription;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -18,19 +28,33 @@ import retrofit2.Response;
 
 public class DataRepository {
     private NEOService neoService;
+    private static DataRepository mInstance;
+    private final MutableLiveData<List<MeteorObjects>> data;
 
     public DataRepository() {
         this.neoService = ApiClient.getClient().create(NEOService.class);
+        data = new MutableLiveData<>();
     }
+
     public static DataRepository getInstance() {
+        if(mInstance == null) {
+            mInstance = new DataRepository();
+        }
         return new DataRepository();
     }
-    public LiveData<NEO> getNeo(String startDate, String endDate) {
-        final MutableLiveData<NEO> data = new MutableLiveData<>();
+
+    public LiveData<List<MeteorObjects>> getNeo() {
+        data.setValue(new ArrayList<MeteorObjects>());
+        return data;
+    }
+    public void emptyData() {
+        data.setValue(new ArrayList<MeteorObjects>());
+    }
+    public void loadNew(String startDate, String endDate){
         neoService.getFeeds(startDate, endDate, BuildConfig.API_KEY).enqueue(new Callback<NEO>() {
             @Override
             public void onResponse(Call<NEO> call, Response<NEO> response) {
-                data.setValue(response.body());
+                data.setValue(response.body().getNearEarthObjects().get(0).getMeteorObjects());
             }
 
             @Override
@@ -38,6 +62,5 @@ public class DataRepository {
 
             }
         });
-        return data;
     }
 }

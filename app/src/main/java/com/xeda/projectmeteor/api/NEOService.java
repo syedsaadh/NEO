@@ -1,7 +1,6 @@
 package com.xeda.projectmeteor.api;
 
 import com.xeda.projectmeteor.models.NEO;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
